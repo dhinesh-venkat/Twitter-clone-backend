@@ -2,9 +2,14 @@ package com.dhinesh.twitter.models;
 
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class User {
     private String userId;
     private String avatar;
+    @JsonFormat(pattern="dd-MM-yyyy")
     private Date createdAt;
     private String username;
     private String displayName;
@@ -13,8 +18,6 @@ public class User {
     public User() {
         super();
     }
-    
-    
 
     @Override
     public String toString() {

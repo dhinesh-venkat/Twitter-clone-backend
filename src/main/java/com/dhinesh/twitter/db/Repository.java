@@ -191,8 +191,8 @@ public class Repository {
             st.setString(1, id);
             st.setString(2, user.getUsername().toLowerCase());
             st.setString(3, user.getPassword());
-            st.setString(4, user.getDisplayName());
-            st.setDate(5, user.getCreatedAt());
+            st.setDate(4, user.getCreatedAt());
+            st.setString(5, user.getDisplayName());
             st.setString(6, user.getAvatar());
 
             st.executeUpdate();
@@ -230,7 +230,7 @@ public class Repository {
                 user.setAvatar(rs.getString("avatar"));
                 user.setCreatedAt(rs.getDate("created_at"));
                 user.setDisplayName(rs.getString("display_name"));
-                user.setPassword(rs.getString("password"));
+                //user.setPassword(rs.getString("password"));
                 user.setUserId(rs.getString("user_id"));
                 user.setUsername(rs.getString("username"));
             }
