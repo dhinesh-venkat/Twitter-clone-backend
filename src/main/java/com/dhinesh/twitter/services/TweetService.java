@@ -1,0 +1,57 @@
+package com.dhinesh.twitter.services;
+
+import java.io.IOException;
+import java.util.List;
+
+import com.dhinesh.twitter.App;
+import com.dhinesh.twitter.db.Repository;
+import com.dhinesh.twitter.models.Tweet;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+
+@Path("/tweets")
+public class TweetService {
+
+    Repository repo = App.repo;
+    ObjectMapper mapper = App.mapper;
+
+    @GET
+    @Path("/")
+    @Produces("application/json")
+    public List<Tweet> getTweets() {
+        List<Tweet> tweets = repo.getTweets();
+
+        return tweets;
+    }
+
+    @POST
+    @Path("/new")
+    @Produces("application/json")
+    public Tweet newTweet(String json) {
+        System.out.println("creating new tweet...");
+        Tweet tweet = null;
+        try {
+            tweet = mapper.readValue(json, Tweet.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+        }
+
+        System.out.println(tweet.toString());
+        int result = repo.createTweet(tweet);
+
+        if (result == 0) {
+            // this id has 0 always
+            return repo.getTweetsById(tweet.getTweetId());
+        } else {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+}

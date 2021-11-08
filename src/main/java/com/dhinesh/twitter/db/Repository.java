@@ -339,7 +339,7 @@ public class Repository {
                 tweet.setCreatedAt(rs.getDate("created_at"));
                 tweet.setLikes(rs.getInt("likes"));
                 tweet.setOwnerId(rs.getString("owner_id"));
-                tweet.setPublic(rs.getBoolean("public"));
+                tweet.setIsPublic(rs.getBoolean("public"));
                 tweet.setTweetId(rs.getInt("tweet_id"));
 
                 tweets.add(tweet);
@@ -371,7 +371,7 @@ public class Repository {
             st.setString(2, tweet.getContent());
             st.setString(3, tweet.getOwnerId());
             st.setDate(4, tweet.getCreatedAt());
-            st.setBoolean(5, tweet.isPublic());
+            st.setBoolean(5, tweet.getIsPublic());
             st.setInt(6, tweet.getLikes());
 
             st.executeUpdate();
@@ -397,7 +397,7 @@ public class Repository {
         try {
             st = conn.prepareStatement(sql);
             st.setString(1, tweet.getContent());
-            st.setBoolean(2, tweet.isPublic());
+            st.setBoolean(2, tweet.getIsPublic());
             st.setInt(3, tweet.getTweetId());
 
             st.executeUpdate();
@@ -593,7 +593,7 @@ public class Repository {
                 tweet.setCreatedAt(rs.getDate("created_at"));
                 tweet.setLikes(rs.getInt("likes"));
                 tweet.setOwnerId(rs.getString("owner_id"));
-                tweet.setPublic(rs.getBoolean("public"));
+                tweet.setIsPublic(rs.getBoolean("public"));
                 tweet.setTweetId(rs.getInt("tweet_id"));
 
                 tweets.add(tweet);
@@ -801,7 +801,7 @@ public class Repository {
     }
 
     // get tweets by user_id
-    public List<Tweet> getTweetsById(String user_id) {
+    public List<Tweet> getTweetsByUser(String user_id) {
         List<Tweet> tweets = new ArrayList<Tweet>();
 
         Statement st = null;
@@ -818,7 +818,7 @@ public class Repository {
                 tweet.setCreatedAt(rs.getDate("created_at"));
                 tweet.setLikes(rs.getInt("likes"));
                 tweet.setOwnerId(rs.getString("owner_id"));
-                tweet.setPublic(rs.getBoolean("public"));
+                tweet.setIsPublic(rs.getBoolean("public"));
                 tweet.setTweetId(rs.getInt("tweet_id"));
 
                 tweets.add(tweet);
@@ -836,6 +836,44 @@ public class Repository {
             }
         }
         return tweets;
+
+    }
+
+    // get a tweet by id
+    public Tweet getTweetsById(int tweet_id) {
+        Tweet tweet = null;
+
+        Statement st = null;
+        String sql = "select * from tweets where tweet_id=? order by created_at desc";
+
+        try {
+            st = conn.createStatement();
+
+            ResultSet rs = st.executeQuery(sql);
+            if (rs.next()) {
+                tweet = new Tweet();
+
+                tweet.setContent(rs.getString("content"));
+                tweet.setCreatedAt(rs.getDate("created_at"));
+                tweet.setLikes(rs.getInt("likes"));
+                tweet.setOwnerId(rs.getString("owner_id"));
+                tweet.setIsPublic(rs.getBoolean("public"));
+                tweet.setTweetId(rs.getInt("tweet_id"));
+
+                return tweet;
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return tweet;
 
     }
 

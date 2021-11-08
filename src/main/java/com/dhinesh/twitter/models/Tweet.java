@@ -2,9 +2,12 @@ package com.dhinesh.twitter.models;
 
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Tweet {
     private int tweetId;
     private String ownerId;
+    @JsonFormat(pattern="dd-MM-yyyy")
     private Date createdAt;
     private String content;
     private int likes;
@@ -54,12 +57,18 @@ public class Tweet {
         this.likes = likes;
     }
 
-    public boolean isPublic() {
+    public boolean getIsPublic() {
         return isPublic;
     }
 
-    public void setPublic(boolean isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    @Override
+    public String toString() {
+        return "Tweet [content=" + content + ", createdAt=" + createdAt + ", isPublic=" + isPublic + ", likes=" + likes
+                + ", ownerId=" + ownerId + ", tweetId=" + tweetId + "]";
     }
 
 }

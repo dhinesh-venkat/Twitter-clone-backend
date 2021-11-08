@@ -2,11 +2,14 @@ package com.dhinesh.twitter.models;
 
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Reply {
     private int id;
     private String content;
     private String replyBy;
     private int tweetId;
+    @JsonFormat(pattern="dd-MM-yyyy")
     private Date createdAt;
 
     public Reply() {
