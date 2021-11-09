@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.dhinesh.twitter.App;
 import com.dhinesh.twitter.db.Repository;
+import com.dhinesh.twitter.models.Like;
 import com.dhinesh.twitter.models.Tweet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,7 +49,7 @@ public class TweetService {
         int result = repo.createTweet(tweet);
 
         if (result == 0) {
-            throw new WebApplicationException(Response.Status.ACCEPTED);
+            throw new WebApplicationException(Response.Status.OK);
 
         } else {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
@@ -94,6 +95,49 @@ public class TweetService {
         int result = repo.deleteTweet(id);
         if (result == 0) {
             return "success";
+        } else {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @POST
+    @Path("/like")
+    public void likeTweet(String json) {
+        Like like = null;
+
+        try {
+            like = mapper.readValue(json, Like.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+        }
+
+        int result = repo.likeTweet(like);
+
+        if (result == 0) {
+            throw new WebApplicationException(Response.Status.OK);
+        } else {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DELETE
+    @Path("/dislike")
+    @Produces("application/json")
+    public void dislikeTweet(String json) {
+        Like like = null;
+
+        try {
+            like = mapper.readValue(json, Like.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+        }
+
+        int result = repo.dislikeTweet(like);
+
+        if (result == 0) {
+            throw new WebApplicationException(Response.Status.OK);
         } else {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }

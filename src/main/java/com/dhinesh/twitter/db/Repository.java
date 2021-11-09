@@ -446,7 +446,7 @@ public class Repository {
     // update like count
     public int updateLike(int tweet_id) {
         PreparedStatement st = null;
-        String sql = "update tweets set likes=(select count(user_id) from saved_posts where tweet_id=?) where tweet_id=?";
+        String sql = "update tweets set likes=(select count(liked_by) from likes where tweet_id=?) where tweet_id=?;";
 
         try {
             st = conn.prepareStatement(sql);
@@ -474,6 +474,7 @@ public class Repository {
     public int likeTweet(Like like) {
         PreparedStatement st = null;
         String sql = "insert into likes (tweet_id, liked_by) values (?, ?)";
+        int result = 1;
 
         try {
             st = conn.prepareStatement(sql);
@@ -481,26 +482,28 @@ public class Repository {
             st.setString(2, like.getLikedBy());
 
             st.executeUpdate();
+            result = 0;
         } catch (Exception e) {
             e.printStackTrace();
-            return 1;
+            return result;
 
         } finally {
             try {
                 st.close();
-                updateLike(like.getTweetId());
+                result = updateLike(like.getTweetId());
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
 
-        return 0;
+        return result;
     }
 
     // dislike a tweet
     public int dislikeTweet(Like like) {
         PreparedStatement st = null;
         String sql = "delete from likes where tweet_id=? and liked_by=?";
+        int result = 1;
 
         try {
             st = conn.prepareStatement(sql);
@@ -508,9 +511,10 @@ public class Repository {
             st.setString(2, like.getLikedBy());
 
             st.executeUpdate();
+            result = 0;
         } catch (Exception e) {
             e.printStackTrace();
-            return 1;
+            return result;
 
         } finally {
             try {
@@ -521,7 +525,7 @@ public class Repository {
             }
         }
 
-        return 0;
+        return result;
     }
 
     // save a tweet
