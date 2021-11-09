@@ -6,6 +6,7 @@ import java.util.List;
 import com.dhinesh.twitter.App;
 import com.dhinesh.twitter.db.Repository;
 import com.dhinesh.twitter.models.Like;
+import com.dhinesh.twitter.models.Reply;
 import com.dhinesh.twitter.models.Tweet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -135,6 +136,82 @@ public class TweetService {
         }
 
         int result = repo.dislikeTweet(like);
+
+        if (result == 0) {
+            throw new WebApplicationException(Response.Status.OK);
+        } else {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GET
+    @Path("/{id}/replies")
+    @Produces("application/json")
+    public List<Reply> getReplies(@PathParam("id") int tweet_id) {
+        List<Reply> replies = repo.getReplies(tweet_id);
+
+        return replies;
+    }
+
+    @POST
+    @Path("/replies/new")
+    public void createReply(String json) {
+        Reply reply = null;
+
+        try {
+            reply = mapper.readValue(json, Reply.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+        }
+
+        int result = repo.createReply(reply);
+
+        if (result == 0) {
+            throw new WebApplicationException(Response.Status.OK);
+        } else {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PUT
+    @Path("/replies/update")
+    @Produces("application/json")
+    public Reply updateReply(String json) {
+
+        Reply reply = null;
+        try {
+            reply = mapper.readValue(json, Reply.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+        }
+
+        // System.out.println(reply.toString());
+        // Only content can be updated.
+        int result = repo.updateReply(reply);
+
+        if (result == 0) {
+            return repo.getReplyById(reply.getId());
+        } else {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DELETE
+    @Path("/replies/delete")
+    @Produces("application/json")
+    public void deleteReply(String json) {
+        Reply reply = null;
+
+        try {
+            reply = mapper.readValue(json, Reply.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+        }
+
+        int result = repo.deleteReply(reply.getId());
 
         if (result == 0) {
             throw new WebApplicationException(Response.Status.OK);

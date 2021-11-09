@@ -621,15 +621,13 @@ public class Repository {
     // create reply
     public int createReply(Reply reply) {
         PreparedStatement st = null;
-        String sql = "insert into replies values (?,?,?,?,?)";
+        String sql = "insert into replies(content,reply_by,tweet_id,created_at) values (?, ?, ?, current_timestamp())";
 
         try {
             st = conn.prepareStatement(sql);
-            st.setInt(1, reply.getId());
-            st.setString(2, reply.getContent());
-            st.setString(3, reply.getReplyBy());
-            st.setInt(4, reply.getTweetId());
-            st.setDate(5, reply.getCreatedAt());
+            st.setString(1, reply.getContent());
+            st.setString(2, reply.getReplyBy());
+            st.setInt(3, reply.getTweetId());
 
             st.executeUpdate();
 
@@ -657,7 +655,7 @@ public class Repository {
             st = conn.prepareStatement(sql);
             st.setInt(1, tweet_id);
 
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Reply reply = new Reply();
 
@@ -683,6 +681,42 @@ public class Repository {
         }
         return replies;
 
+    }
+
+    // get a reply by id
+    public Reply getReplyById(int id) {
+        Reply reply = null;
+
+        PreparedStatement st = null;
+        String sql = "select * from replies where id=?";
+
+        try {
+            st = conn.prepareStatement(sql);
+            st.setInt(1, id);
+
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                reply = new Reply();
+
+                reply.setContent(rs.getString("content"));
+                reply.setCreatedAt(rs.getDate("created_at"));
+                reply.setId(rs.getInt("id"));
+                reply.setReplyBy(rs.getString("reply_by"));
+                reply.setTweetId(rs.getInt("tweet_id"));
+
+                return reply;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return reply;
     }
 
     // update a tweet
