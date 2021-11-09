@@ -583,13 +583,14 @@ public class Repository {
     public List<Tweet> getSavedTweets(String user_id) {
         List<Tweet> tweets = new ArrayList<Tweet>();
 
-        Statement st = null;
+        PreparedStatement st = null;
         String sql = "select * from tweets where tweet_id in (select tweet_id from saved_posts where user_id=?)";
 
         try {
-            st = conn.createStatement();
+            st = conn.prepareStatement(sql);
+            st.setString(1, user_id);
 
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Tweet tweet = new Tweet();
 
