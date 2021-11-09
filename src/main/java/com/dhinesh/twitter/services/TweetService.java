@@ -1,7 +1,6 @@
 package com.dhinesh.twitter.services;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.dhinesh.twitter.App;

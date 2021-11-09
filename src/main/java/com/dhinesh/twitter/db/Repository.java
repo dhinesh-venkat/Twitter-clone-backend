@@ -783,7 +783,7 @@ public class Repository {
             st = conn.prepareStatement(sql);
             st.setString(1, user_id);
 
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Follower follower = new Follower();
 
