@@ -804,11 +804,13 @@ public class Repository {
     public List<Tweet> getTweetsByUser(String user_id) {
         List<Tweet> tweets = new ArrayList<Tweet>();
 
-        Statement st = null;
+        PreparedStatement st = null;
         String sql = "select * from tweets where owner_id=? order by created_at desc";
 
         try {
-            st = conn.createStatement();
+            st = conn.prepareStatement(sql);
+            st.setString(1, user_id);
+            
 
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
@@ -843,13 +845,14 @@ public class Repository {
     public Tweet getTweetsById(int tweet_id) {
         Tweet tweet = null;
 
-        Statement st = null;
-        String sql = "select * from tweets where tweet_id=? order by created_at desc";
+        PreparedStatement st = null;
+        String sql = "select * from tweets where tweet_id=?";
 
         try {
-            st = conn.createStatement();
+            st = conn.prepareStatement(sql);
+            st.setInt(1, tweet_id);
 
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 tweet = new Tweet();
 

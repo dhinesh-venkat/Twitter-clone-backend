@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
@@ -32,9 +33,7 @@ public class TweetService {
 
     @POST
     @Path("/new")
-    @Produces("application/json")
-    public Tweet newTweet(String json) {
-        System.out.println("creating new tweet...");
+    public void newTweet(String json) {
         Tweet tweet = null;
         try {
             tweet = mapper.readValue(json, Tweet.class);
@@ -43,15 +42,39 @@ public class TweetService {
             throw new WebApplicationException(Response.Status.NO_CONTENT);
         }
 
-        System.out.println(tweet.toString());
+        // System.out.println(tweet.toString());
         int result = repo.createTweet(tweet);
 
         if (result == 0) {
-            // this id has 0 always
-            return repo.getTweetsById(tweet.getTweetId());
+            throw new WebApplicationException(Response.Status.ACCEPTED);
+
         } else {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
+    @PUT
+    @Path("/update")
+    @Produces("application/json")
+    public Tweet updateTweet(String json) {
+
+        Tweet tweet = null;
+        try {
+            tweet = mapper.readValue(json, Tweet.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(Response.Status.NO_CONTENT);
+        }
+
+        // System.out.println(tweet.toString());
+        // Only content and visibility can be updated.
+        int result = repo.updateTweet(tweet);
+
+        if (result == 0) {
+            return repo.getTweetsById(tweet.getTweetId());
+
+        } else {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
