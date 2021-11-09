@@ -8,10 +8,12 @@ import com.dhinesh.twitter.db.Repository;
 import com.dhinesh.twitter.models.Tweet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
@@ -73,6 +75,25 @@ public class TweetService {
         if (result == 0) {
             return repo.getTweetsById(tweet.getTweetId());
 
+        } else {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DELETE
+    @Path("/delete/{id}")
+    @Produces("application/json")
+    public String deleteTweet(@PathParam("id") int id) {
+
+        Tweet tweet = repo.getTweetsById(id);
+
+        if(tweet == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+
+        int result = repo.deleteTweet(id);
+        if (result == 0) {
+            return "success";
         } else {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
