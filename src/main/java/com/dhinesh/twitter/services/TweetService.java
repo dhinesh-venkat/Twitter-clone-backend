@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.dhinesh.twitter.App;
+import com.dhinesh.twitter.authentication.Secured;
 import com.dhinesh.twitter.db.Repository;
 import com.dhinesh.twitter.models.Like;
 import com.dhinesh.twitter.models.Reply;
@@ -19,7 +20,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 
 @Path("/tweets")
 public class TweetService {
@@ -222,9 +225,12 @@ public class TweetService {
     }
 
     @GET
-    @Path("/saved/{id}")
+    @Secured
+    @Path("/saved")
     @Produces("application/json")
-    public List<Tweet> getSavedTweets(@PathParam("id") String user_id) {
+    public List<Tweet> getSavedTweets(@Context SecurityContext securityContext) {
+        String user_id = securityContext.getUserPrincipal().getName();
+
         List<Tweet> tweets = repo.getSavedTweets(user_id);
 
         return tweets;

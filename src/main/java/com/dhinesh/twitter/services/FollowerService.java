@@ -3,6 +3,7 @@ package com.dhinesh.twitter.services;
 import java.util.List;
 
 import com.dhinesh.twitter.App;
+import com.dhinesh.twitter.authentication.Secured;
 import com.dhinesh.twitter.db.Repository;
 import com.dhinesh.twitter.models.Follower;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +14,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 
 @Path("/followers")
 public class FollowerService {
@@ -22,9 +25,12 @@ public class FollowerService {
     ObjectMapper mapper = App.mapper;
 
     @GET
-    @Path("/{id}")
+    @Secured
+    @Path("/")
     @Produces("application/json")
-    public List<Follower> getFollowers(@PathParam("id") String user_id) {
+    public List<Follower> getFollowers(@Context SecurityContext securityContext) {
+        String user_id = securityContext.getUserPrincipal().getName();
+
         List<Follower> followers = repo.getFollowers(user_id);
 
         return followers;
