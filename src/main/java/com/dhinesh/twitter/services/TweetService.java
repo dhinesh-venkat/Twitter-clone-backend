@@ -116,16 +116,11 @@ public class TweetService {
 
     @POST
     @Secured
-    @Path("/like")
-    public void likeTweet(String json) {
-        Like like = null;
-
-        try {
-            like = mapper.readValue(json, Like.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new WebApplicationException(Response.Status.NO_CONTENT);
-        }
+    @Path("/like/{id}")
+    public void likeTweet(@PathParam("id") int tweet_id, @Context SecurityContext securityContext) {
+        Like like = new Like();
+        like.setTweetId(tweet_id);
+        like.setLikedBy(securityContext.getUserPrincipal().getName());
 
         int result = repo.likeTweet(like);
 
@@ -138,17 +133,12 @@ public class TweetService {
 
     @DELETE
     @Secured
-    @Path("/dislike")
+    @Path("/dislike/{id}")
     @Produces("application/json")
-    public void dislikeTweet(String json) {
-        Like like = null;
-
-        try {
-            like = mapper.readValue(json, Like.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new WebApplicationException(Response.Status.NO_CONTENT);
-        }
+    public void dislikeTweet(@PathParam("id") int tweet_id, @Context SecurityContext securityContext) {
+        Like like = new Like();
+        like.setTweetId(tweet_id);
+        like.setLikedBy(securityContext.getUserPrincipal().getName());
 
         int result = repo.dislikeTweet(like);
 

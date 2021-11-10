@@ -158,10 +158,10 @@ public class Repository {
         Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key)).parseClaimsJws(token)
                 .getBody();
 
-        System.out.println("ID: " + claims.getId());
-        System.out.println("Subject: " + claims.getSubject());
-        System.out.println("Issuer: " + claims.getIssuer());
-        System.out.println("Expiration: " + claims.getExpiration());
+        // System.out.println("ID: " + claims.getId());
+        // System.out.println("Subject: " + claims.getSubject());
+        // System.out.println("Issuer: " + claims.getIssuer());
+        // System.out.println("Expiration: " + claims.getExpiration());
 
         // uncomment to return username
         // return claims.getSubject();
@@ -361,16 +361,15 @@ public class Repository {
     // create new tweet
     public int createTweet(Tweet tweet) {
         PreparedStatement st = null;
-        String sql = "insert into tweets values (?,?,?,?,?,?)";
+        String sql = "insert into tweets values (?,?,?,CURRENT_TIMESTAMP(),?,?)";
 
         try {
             st = conn.prepareStatement(sql);
             st.setInt(1, tweet.getTweetId());
             st.setString(2, tweet.getContent());
             st.setString(3, tweet.getOwnerId());
-            st.setDate(4, tweet.getCreatedAt());
-            st.setBoolean(5, tweet.getIsPublic());
-            st.setInt(6, tweet.getLikes());
+            st.setBoolean(4, tweet.getIsPublic());
+            st.setInt(5, tweet.getLikes());
 
             st.executeUpdate();
 
