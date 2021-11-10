@@ -36,7 +36,9 @@ public class AuthenticationService {
             throw new WebApplicationException(Response.Status.NO_CONTENT);
         }
 
-        //System.out.println(user.toString());
+        user.setPassword(repo.hashPassword(user.getPassword()));
+
+        
         int result = repo.addUser(user);
 
         if (result == 0) {

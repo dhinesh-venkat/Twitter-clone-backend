@@ -8,7 +8,6 @@ import com.dhinesh.twitter.authentication.Secured;
 import com.dhinesh.twitter.db.Repository;
 import com.dhinesh.twitter.models.Like;
 import com.dhinesh.twitter.models.Reply;
-import com.dhinesh.twitter.models.SaveTweet;
 import com.dhinesh.twitter.models.Tweet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

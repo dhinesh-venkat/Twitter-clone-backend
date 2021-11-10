@@ -17,6 +17,7 @@ import com.dhinesh.twitter.models.Tweet;
 import com.dhinesh.twitter.models.User;
 import com.dhinesh.twitter.services.KeyService;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import javax.xml.bind.DatatypeConverter;
@@ -122,7 +123,7 @@ public class Repository {
                 }
             }
 
-            System.out.println("Token updated!");
+            // System.out.println("Token updated!");
 
         } else {
             String sql = "insert into Tokens (user_id,token) values (?,?)";
@@ -145,7 +146,7 @@ public class Repository {
                 }
             }
 
-            System.out.println("Token added!");
+            // System.out.println("Token added!");
 
         }
     }
@@ -179,7 +180,7 @@ public class Repository {
     // creates new user
     public int addUser(User user) {
         PreparedStatement st = null;
-        String sql = "insert into Users values (?,?,?,?,?,?)";
+        String sql = "insert into Users values (?,?,?,CURRENT_TIMESTAMP(),?,?)";
 
         String id = generateId();
 
@@ -189,9 +190,8 @@ public class Repository {
             st.setString(1, id);
             st.setString(2, user.getUsername().toLowerCase());
             st.setString(3, user.getPassword());
-            st.setDate(4, user.getCreatedAt());
-            st.setString(5, user.getDisplayName());
-            st.setString(6, user.getAvatar());
+            st.setString(4, user.getDisplayName());
+            st.setString(5, user.getAvatar());
 
             st.executeUpdate();
 
@@ -1049,5 +1049,23 @@ public class Repository {
             }
         }
         return 0;
+    }
+
+    public String hashPassword(String password) {
+        // System.out.println("Before hashing : " + password);
+
+        String bcryptHashString = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+
+        // System.out.println("After hashing : " + bcryptHashString);
+
+        return bcryptHashString;
+    }
+
+
+    public boolean verifyPassword(String password, String bcryptHashString) {
+        BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), bcryptHashString);
+        System.out.println(result.details);
+
+        return result.verified;
     }
 }

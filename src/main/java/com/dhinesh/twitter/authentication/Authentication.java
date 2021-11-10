@@ -44,10 +44,6 @@ public class Authentication {
             String username = credentials.getUsername();
             String password = credentials.getPassword();
 
-            System.out.println(username);
-            System.out.println(password);
-
-
             // Authenticate the user using the credentials provided
             authenticate(username, password);
 
@@ -69,9 +65,9 @@ public class Authentication {
         // Authenticate against a database
         // Throw an Exception if the credentials are invalid
         user = repo.getUser(username);
-        System.out.println(user.toString());
+        String bcryptHashString = user.getPassword();
 
-        if(user == null || !user.getPassword().equals(password)) {
+        if(user == null || !repo.verifyPassword(password, bcryptHashString)) {
             throw new Exception("Wrong credentials");
         }
     }
@@ -89,7 +85,7 @@ public class Authentication {
         String userId = user.getUserId();
         String token = createJWT(userId, "admin", username);
 
-        System.out.println(token);
+        // System.out.println(token);
 
         repo.storeToken(userId, token);
 
