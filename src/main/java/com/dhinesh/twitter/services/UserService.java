@@ -51,11 +51,9 @@ public class UserService {
 
     @GET
     @Secured
-    @Path("/profile")
+    @Path("/profile/{id}")
     @Produces("application/json")
-    public List<Tweet> profile(@Context SecurityContext securityContext) {
-        String user_id = securityContext.getUserPrincipal().getName();
-        
+    public List<Tweet> profile(@PathParam("id") String user_id) {
         List<Tweet> tweets = repo.getTweetsByUser(user_id);
 
         return tweets;
@@ -95,7 +93,7 @@ public class UserService {
     @Path("/profile/delete")
     @Produces("application/json")
     public String deleteTweet(@Context SecurityContext securityContext) {
-        int result = repo.deleteAccount(securityContext.getUserPrincipal().getName());
+        int result = repo.removeUser(securityContext.getUserPrincipal().getName());
         
         if (result == 0) {
             throw new WebApplicationException(Response.Status.OK);

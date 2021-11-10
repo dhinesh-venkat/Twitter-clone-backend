@@ -162,7 +162,7 @@ public class TweetService {
     @POST
     @Secured
     @Path("/replies/new")
-    public void createReply(String json) {
+    public void createReply(String json, @Context SecurityContext securityContext) {
         Reply reply = null;
 
         try {
@@ -171,6 +171,9 @@ public class TweetService {
             e.printStackTrace();
             throw new WebApplicationException(Response.Status.NO_CONTENT);
         }
+
+        String user_id = securityContext.getUserPrincipal().getName();
+        reply.setReplyBy(user_id);
 
         int result = repo.createReply(reply);
 
@@ -208,19 +211,10 @@ public class TweetService {
 
     @DELETE
     @Secured
-    @Path("/replies/delete")
+    @Path("/replies/delete/{id}")
     @Produces("application/json")
-    public void deleteReply(String json) {
-        Reply reply = null;
-
-        try {
-            reply = mapper.readValue(json, Reply.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new WebApplicationException(Response.Status.NO_CONTENT);
-        }
-
-        int result = repo.deleteReply(reply.getId());
+    public void deleteReply(@PathParam("id") int id) {
+        int result = repo.deleteReply(id);
 
         if (result == 0) {
             throw new WebApplicationException(Response.Status.OK);
@@ -243,18 +237,11 @@ public class TweetService {
 
     @POST
     @Secured
-    @Path("/save")
-    public void save(String json) {
-        SaveTweet savedTweet = null;
+    @Path("/save/{id}")
+    public void save(@PathParam("id") int tweet_id, @Context SecurityContext securityContext) {
+        String user_id = securityContext.getUserPrincipal().getName();
 
-        try {
-            savedTweet = mapper.readValue(json, SaveTweet.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new WebApplicationException(Response.Status.NO_CONTENT);
-        }
-
-        int result = repo.saveTweet(savedTweet.getTweetId(), savedTweet.getUserId());
+        int result = repo.saveTweet(tweet_id, user_id);
 
         if (result == 0) {
             throw new WebApplicationException(Response.Status.OK);
