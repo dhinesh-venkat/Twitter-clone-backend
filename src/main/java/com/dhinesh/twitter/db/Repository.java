@@ -230,7 +230,7 @@ public class Repository {
                 user.setAvatar(rs.getString("avatar"));
                 user.setCreatedAt(rs.getDate("created_at"));
                 user.setDisplayName(rs.getString("display_name"));
-                //user.setPassword(rs.getString("password"));
+                user.setPassword(rs.getString("password"));
                 user.setUserId(rs.getString("user_id"));
                 user.setUsername(rs.getString("username"));
             }
@@ -851,7 +851,7 @@ public class Repository {
             st.setString(1, user_id);
             
 
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Tweet tweet = new Tweet();
 
@@ -931,7 +931,7 @@ public class Repository {
             st = conn.prepareStatement(sql);
             st.setString(1, user_id);
 
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Follower follower = new Follower();
 

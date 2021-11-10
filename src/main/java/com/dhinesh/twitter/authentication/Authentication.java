@@ -69,6 +69,7 @@ public class Authentication {
         // Authenticate against a database
         // Throw an Exception if the credentials are invalid
         user = repo.getUser(username);
+        System.out.println(user.toString());
 
         if(user == null || !user.getPassword().equals(password)) {
             throw new Exception("Wrong credentials");

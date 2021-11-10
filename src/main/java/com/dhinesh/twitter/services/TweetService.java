@@ -96,7 +96,7 @@ public class TweetService {
 
         int result = repo.deleteTweet(id);
         if (result == 0) {
-            return "success";
+            throw new WebApplicationException(Response.Status.OK);
         } else {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
