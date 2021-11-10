@@ -40,24 +40,24 @@ public class Repository {
 
     public String isValidToken(String token) {
         PreparedStatement st = null;
-		String sql = "select user_id from tokens where token=?";
-		String user_id = "";
+        String sql = "select user_id from tokens where token=?";
+        String user_id = "";
 
-		try {
-			st = conn.prepareStatement(sql);
+        try {
+            st = conn.prepareStatement(sql);
             st.setString(1, token);
 
-			ResultSet rs = st.executeQuery();
+            ResultSet rs = st.executeQuery();
 
-			if (rs.next()) {
-				user_id = rs.getString("user_id");
-			}
+            if (rs.next()) {
+                user_id = rs.getString("user_id");
+            }
 
             return user_id;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             try {
                 st.close();
             } catch (SQLException e) {
@@ -65,9 +65,8 @@ public class Repository {
             }
         }
 
-		return user_id;
-	}
-
+        return user_id;
+    }
 
     private boolean existsId(String user_id) {
         boolean exists = false;
@@ -80,7 +79,7 @@ public class Repository {
 
             ResultSet rs = st.executeQuery();
 
-            if(rs.next()) {
+            if (rs.next()) {
                 exists = true;
             }
 
@@ -100,45 +99,22 @@ public class Repository {
 
     public void storeToken(String id, String token) {
         PreparedStatement st = null;
-		
-		if(existsId(id)) {
-			
-			String sql = "update Tokens set token=? where user_id=?";
 
-			try {
-				st = conn.prepareStatement(sql);
-	
-				st.setString(1, token);
-				st.setString(2, id);
-	
-				st.executeUpdate();
-	
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
+        if (existsId(id)) {
+
+            String sql = "update Tokens set token=? where user_id=?";
+
             try {
-                st.close();
+                st = conn.prepareStatement(sql);
+
+                st.setString(1, token);
+                st.setString(2, id);
+
+                st.executeUpdate();
+
             } catch (SQLException e) {
                 e.printStackTrace();
-            }
-        }
-
-			System.out.println("Token updated!");
-		
-		} else {
-			String sql = "insert into Tokens (user_id,token) values (?,?)";
-
-			try {
-				st = conn.prepareStatement(sql);
-	
-				st.setString(1, id);
-				st.setString(2, token);
-	
-				st.executeUpdate();
-	
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
+            } finally {
                 try {
                     st.close();
                 } catch (SQLException e) {
@@ -146,27 +122,49 @@ public class Repository {
                 }
             }
 
-			System.out.println("Token added!");
+            System.out.println("Token updated!");
 
-		}
-	}
+        } else {
+            String sql = "insert into Tokens (user_id,token) values (?,?)";
+
+            try {
+                st = conn.prepareStatement(sql);
+
+                st.setString(1, id);
+                st.setString(2, token);
+
+                st.executeUpdate();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    st.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            System.out.println("Token added!");
+
+        }
+    }
 
     public String getUserFromToken(String token) {
 
         String key = KeyService.ACCESS_TOKEN_SECRET;
- 
-        //This line will throw an exception if it is not a signed JWS (as expected)
-        Claims claims = Jwts.parser()         
-           .setSigningKey(DatatypeConverter.parseBase64Binary(key))
-           .parseClaimsJws(token).getBody();
+
+        // This line will throw an exception if it is not a signed JWS (as expected)
+        Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key)).parseClaimsJws(token)
+                .getBody();
 
         System.out.println("ID: " + claims.getId());
         System.out.println("Subject: " + claims.getSubject());
         System.out.println("Issuer: " + claims.getIssuer());
         System.out.println("Expiration: " + claims.getExpiration());
-        
+
         // uncomment to return username
-		// return claims.getSubject();
+        // return claims.getSubject();
 
         // will return userId
         return claims.getId();
@@ -226,7 +224,7 @@ public class Repository {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 user = new User();
-                
+
                 user.setAvatar(rs.getString("avatar"));
                 user.setCreatedAt(rs.getDate("created_at"));
                 user.setDisplayName(rs.getString("display_name"));
@@ -849,7 +847,6 @@ public class Repository {
         try {
             st = conn.prepareStatement(sql);
             st.setString(1, user_id);
-            
 
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -904,7 +901,6 @@ public class Repository {
 
                 return tweet;
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1012,70 +1008,221 @@ public class Repository {
 
     // delete an account
     // SET SQL_SAFE_UPDATES = 0; (must be configured)
+    /*
+     * public int deleteAccount(String user_id) { PreparedStatement tokens = null;
+     * PreparedStatement likes = null; PreparedStatement replies = null;
+     * PreparedStatement saved_posts = null; PreparedStatement tweets = null;
+     * PreparedStatement followers = null; PreparedStatement users = null; String
+     * sqlTokens = "delete from tokens where user_id=?"; String sqlLikes =
+     * "delete from likes where liked_by=?"; String sqlReplies =
+     * "delete from replies where reply_by=?"; String sqlSavedPosts =
+     * "delete from saved_posts where user_id=?"; String sqlTweets =
+     * "delete from tweets where owner_id=?"; String sqlFollowers =
+     * "delete from followers where user_id=? or followed_by=?"; String sqlUsers =
+     * "delete from users where user_id=?";
+     * 
+     * try {
+     * 
+     * tokens = conn.prepareStatement(sqlTokens); tokens.setString(1, user_id);
+     * tokens.executeUpdate();
+     * 
+     * likes = conn.prepareStatement(sqlLikes); likes.setString(1, user_id);
+     * likes.executeUpdate();
+     * 
+     * replies = conn.prepareStatement(sqlReplies); replies.setString(1, user_id);
+     * replies.executeUpdate();
+     * 
+     * saved_posts = conn.prepareStatement(sqlSavedPosts); saved_posts.setString(1,
+     * user_id); saved_posts.executeUpdate();
+     * 
+     * tweets = conn.prepareStatement(sqlTweets); tweets.setString(1, user_id);
+     * tweets.executeUpdate();
+     * 
+     * followers = conn.prepareStatement(sqlFollowers); followers.setString(1,
+     * user_id); followers.setString(2, user_id); followers.executeUpdate();
+     * 
+     * users = conn.prepareStatement(sqlUsers); users.setString(1, user_id);
+     * users.executeUpdate();
+     * 
+     * } catch (Exception e) { e.printStackTrace(); return 1; } finally { try {
+     * tokens.close(); likes.close(); replies.close(); saved_posts.close();
+     * tweets.close(); followers.close(); users.close(); } catch (SQLException e) {
+     * e.printStackTrace(); } }
+     * 
+     * return 0; }
+     */
+
     public int deleteAccount(String user_id) {
-        PreparedStatement tokens = null;
-        PreparedStatement likes = null;
-        PreparedStatement replies = null;
-        PreparedStatement saved_posts = null;
-        PreparedStatement tweets = null;
-        PreparedStatement followers = null;
-        PreparedStatement users = null;
-        String sqlTokens = "delete from tokens where user_id=?";
-        String sqlLikes = "delete from likes where liked_by=?";
-        String sqlReplies = "delete from replies where reply_by=?";
-        String sqlSavedPosts = "delete from saved_posts where user_id=?";
-        String sqlTweets = "delete from tweets where owner_id=?";
-        String sqlFollowers = "delete from followers where user_id=? or followed_by=?";
-        String sqlUsers = "delete from users where user_id=?";
+        Statement st = null;
+        int result = -7;
+
+        String off = "SET SQL_SAFE_UPDATES = 0";
+        String on = "SET SQL_SAFE_UPDATES = 1";
 
         try {
-            
-            tokens = conn.prepareStatement(sqlTokens);
-            tokens.setString(1, user_id);
-            tokens.executeUpdate();
-            
-            likes = conn.prepareStatement(sqlLikes);
-            likes.setString(1, user_id);
-            likes.executeUpdate();
-            
-            replies = conn.prepareStatement(sqlReplies);
-            replies.setString(1, user_id);
-            replies.executeUpdate();
-            
-            saved_posts = conn.prepareStatement(sqlSavedPosts);
-            saved_posts.setString(1, user_id);
-            saved_posts.executeUpdate();
-            
-            tweets = conn.prepareStatement(sqlTweets);
-            tweets.setString(1, user_id);
-            tweets.executeUpdate();
+            st = conn.createStatement();
 
-            followers = conn.prepareStatement(sqlFollowers);
-            followers.setString(1, user_id);
-            followers.setString(2, user_id);
-            followers.executeUpdate();
-            
-            users = conn.prepareStatement(sqlUsers);
-            users.setString(1, user_id);
-            users.executeUpdate();
-            
+            st.executeUpdate(off);
+
+            // delete tweets
+            result += removeTweets(user_id);
+
+            // delete likes
+            result += removeLikes(user_id);
+
+            // delete replies
+            result += removeReplies(user_id);
+
+            // delete saved posts
+            result += removeSavedPosts(user_id);
+
+            // delete followers and following
+            result += removeFollowersAndFollowing(user_id);
+
+            // delete token
+            result += logout(user_id);
+
+            // delete user
+            result += removeUser(user_id);
+
+            st.executeUpdate(on);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public int removeLikes(String user_id) {
+        PreparedStatement st = null;
+        String sql = "delete from likes where liked_by=?";
+
+        try {
+            st = conn.prepareStatement(sql);
+            st.setString(1, user_id);
+
+            st.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
             return 1;
         } finally {
             try {
-                tokens.close();
-                likes.close();
-                replies.close();
-                saved_posts.close();
-                tweets.close();
-                followers.close();
-                users.close();
+                st.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        return 0;
+    }
 
+    public int removeReplies(String user_id) {
+        PreparedStatement st = null;
+        String sql = "delete from replies where reply_by=?";
+
+        try {
+            st = conn.prepareStatement(sql);
+            st.setString(1, user_id);
+
+            st.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    public int removeSavedPosts(String user_id) {
+        PreparedStatement st = null;
+        String sql = "delete from saved_posts where user_id=?";
+
+        try {
+            st = conn.prepareStatement(sql);
+            st.setString(1, user_id);
+
+            st.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    public int removeTweets(String user_id) {
+        PreparedStatement st = null;
+        String sql = "delete from tweets where owner_id=?";
+
+        try {
+            st = conn.prepareStatement(sql);
+            st.setString(1, user_id);
+
+            st.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    public int removeFollowersAndFollowing(String user_id) {
+        PreparedStatement st = null;
+        String sql = "delete from followers where user_id=? or followed_by=?";
+
+        try {
+            st = conn.prepareStatement(sql);
+            st.setString(1, user_id);
+
+            st.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
+    //
+    public int removeUser(String user_id) {
+        PreparedStatement st = null;
+        String sql = "delete from users where user_id=?";
+
+        try {
+            st = conn.prepareStatement(sql);
+            st.setString(1, user_id);
+
+            st.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        } finally {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
         return 0;
     }
 

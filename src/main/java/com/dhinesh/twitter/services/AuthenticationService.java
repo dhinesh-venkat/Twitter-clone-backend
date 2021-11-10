@@ -1,7 +1,6 @@
 package com.dhinesh.twitter.services;
 
 import java.io.IOException;
-import java.security.Principal;
 
 import com.dhinesh.twitter.App;
 import com.dhinesh.twitter.authentication.Secured;
@@ -52,9 +51,7 @@ public class AuthenticationService {
     @Path("/logout")
     @Produces("application/json")
     public void logout(@Context SecurityContext securityContext) {
-        Principal principal = securityContext.getUserPrincipal();
-
-        String user_id = principal.getName();
+        String user_id = securityContext.getUserPrincipal().getName();
 
         int result = repo.logout(user_id);
 

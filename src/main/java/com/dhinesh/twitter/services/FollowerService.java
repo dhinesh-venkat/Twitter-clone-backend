@@ -37,6 +37,7 @@ public class FollowerService {
     }
 
     @DELETE
+    @Secured
     @Path("/remove/{id}")
     @Produces("application/json")
     public void dislikeTweet(@PathParam("id") int id) {

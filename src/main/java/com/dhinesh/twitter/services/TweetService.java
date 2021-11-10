@@ -31,6 +31,7 @@ public class TweetService {
     ObjectMapper mapper = App.mapper;
 
     @GET
+    @Secured
     @Path("/")
     @Produces("application/json")
     public List<Tweet> getTweets() {
@@ -40,15 +41,21 @@ public class TweetService {
     }
 
     @POST
+    @Secured
     @Path("/new")
-    public void newTweet(String json) {
+    public void newTweet(String json, @Context SecurityContext securityContext) {
         Tweet tweet = null;
         try {
             tweet = mapper.readValue(json, Tweet.class);
+
+            String user_id = securityContext.getUserPrincipal().getName();
+
+            tweet.setOwnerId(user_id);
         } catch (IOException e) {
             e.printStackTrace();
             throw new WebApplicationException(Response.Status.NO_CONTENT);
         }
+
 
         // System.out.println(tweet.toString());
         int result = repo.createTweet(tweet);
@@ -62,6 +69,7 @@ public class TweetService {
     }
 
     @PUT
+    @Secured
     @Path("/update")
     @Produces("application/json")
     public Tweet updateTweet(String json) {
@@ -87,6 +95,7 @@ public class TweetService {
     }
 
     @DELETE
+    @Secured
     @Path("/delete/{id}")
     @Produces("application/json")
     public String deleteTweet(@PathParam("id") int id) {
@@ -106,6 +115,7 @@ public class TweetService {
     }
 
     @POST
+    @Secured
     @Path("/like")
     public void likeTweet(String json) {
         Like like = null;
@@ -127,6 +137,7 @@ public class TweetService {
     }
 
     @DELETE
+    @Secured
     @Path("/dislike")
     @Produces("application/json")
     public void dislikeTweet(String json) {
@@ -149,6 +160,7 @@ public class TweetService {
     }
 
     @GET
+    @Secured
     @Path("/{id}/replies")
     @Produces("application/json")
     public List<Reply> getReplies(@PathParam("id") int tweet_id) {
@@ -158,6 +170,7 @@ public class TweetService {
     }
 
     @POST
+    @Secured
     @Path("/replies/new")
     public void createReply(String json) {
         Reply reply = null;
@@ -179,6 +192,7 @@ public class TweetService {
     }
 
     @PUT
+    @Secured
     @Path("/replies/update")
     @Produces("application/json")
     public Reply updateReply(String json) {
@@ -203,6 +217,7 @@ public class TweetService {
     }
 
     @DELETE
+    @Secured
     @Path("/replies/delete")
     @Produces("application/json")
     public void deleteReply(String json) {
@@ -237,6 +252,7 @@ public class TweetService {
     }
 
     @POST
+    @Secured
     @Path("/save")
     public void save(String json) {
         SaveTweet savedTweet = null;
@@ -258,6 +274,7 @@ public class TweetService {
     }
 
     @DELETE
+    @Secured
     @Path("/unsave/{id}")
     @Produces("application/json")
     public void unsave(@PathParam("id") int id) {

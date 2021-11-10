@@ -1,6 +1,5 @@
 package com.dhinesh.twitter.services;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.dhinesh.twitter.App;
@@ -41,6 +40,7 @@ public class UserService {
     }
 
     @GET
+    @Secured
     @Path("/search/{username}")
     @Produces("application/json")
     public List<User> search(@PathParam("username") String username) {
@@ -78,6 +78,7 @@ public class UserService {
     }
 
     @DELETE
+    @Secured
     @Path("/unfollow/{id}")
     @Produces("application/json")
     public String deleteTweet(@PathParam("id") int id) {
