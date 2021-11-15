@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Tweet {
     private int tweetId;
-    private String ownerId;
-    @JsonFormat(pattern="dd-MM-yyyy")
+    private User owner;
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date createdAt;
     private String content;
     private int likes;
@@ -25,12 +25,12 @@ public class Tweet {
         this.tweetId = tweetId;
     }
 
-    public String getOwnerId() {
-        return ownerId;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public Date getCreatedAt() {
@@ -63,12 +63,6 @@ public class Tweet {
 
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
-    }
-
-    @Override
-    public String toString() {
-        return "Tweet [content=" + content + ", createdAt=" + createdAt + ", isPublic=" + isPublic + ", likes=" + likes
-                + ", ownerId=" + ownerId + ", tweetId=" + tweetId + "]";
     }
 
 }

@@ -324,7 +324,7 @@ public class Repository {
         List<Tweet> tweets = new ArrayList<Tweet>();
 
         Statement st = null;
-        String sql = "select * from tweets order by created_at desc";
+        String sql = "select * from tweets inner join users on tweets.owner_id=users.user_id order by tweets.created_at desc";
 
         try {
             st = conn.createStatement();
@@ -336,7 +336,15 @@ public class Repository {
                 tweet.setContent(rs.getString("content"));
                 tweet.setCreatedAt(rs.getDate("created_at"));
                 tweet.setLikes(rs.getInt("likes"));
-                tweet.setOwnerId(rs.getString("owner_id"));
+                
+
+                User owner = new User();
+                owner.setUserId(rs.getString("owner_id"));
+                owner.setUsername(rs.getString("username"));
+                owner.setDisplayName(rs.getString("display_name"));
+                owner.setAvatar(rs.getString("avatar"));
+                tweet.setOwner(owner);
+
                 tweet.setIsPublic(rs.getBoolean("public"));
                 tweet.setTweetId(rs.getInt("tweet_id"));
 
@@ -367,7 +375,7 @@ public class Repository {
             st = conn.prepareStatement(sql);
             st.setInt(1, tweet.getTweetId());
             st.setString(2, tweet.getContent());
-            st.setString(3, tweet.getOwnerId());
+            st.setString(3, tweet.getOwner().getUserId());
             st.setBoolean(4, tweet.getIsPublic());
             st.setInt(5, tweet.getLikes());
 
@@ -581,7 +589,7 @@ public class Repository {
         List<Tweet> tweets = new ArrayList<Tweet>();
 
         PreparedStatement st = null;
-        String sql = "select * from tweets where tweet_id in (select tweet_id from saved_posts where user_id=?)";
+        String sql = "select * from tweets inner join users on tweets.owner_id=users.user_id where tweet_id in (select tweet_id from saved_posts where user_id=?)";
 
         try {
             st = conn.prepareStatement(sql);
@@ -594,7 +602,12 @@ public class Repository {
                 tweet.setContent(rs.getString("content"));
                 tweet.setCreatedAt(rs.getDate("created_at"));
                 tweet.setLikes(rs.getInt("likes"));
-                tweet.setOwnerId(rs.getString("owner_id"));
+                User owner = new User();
+                owner.setUserId(rs.getString("owner_id"));
+                owner.setUsername(rs.getString("username"));
+                owner.setDisplayName(rs.getString("display_name"));
+                owner.setAvatar(rs.getString("avatar"));
+                tweet.setOwner(owner);
                 tweet.setIsPublic(rs.getBoolean("public"));
                 tweet.setTweetId(rs.getInt("tweet_id"));
 
@@ -841,7 +854,7 @@ public class Repository {
         List<Tweet> tweets = new ArrayList<Tweet>();
 
         PreparedStatement st = null;
-        String sql = "select * from tweets where owner_id=? order by created_at desc";
+        String sql = "select * from tweets inner join users on tweets.owner_id=users.user_id where owner_id=? order by tweets.created_at desc";
 
         try {
             st = conn.prepareStatement(sql);
@@ -854,7 +867,14 @@ public class Repository {
                 tweet.setContent(rs.getString("content"));
                 tweet.setCreatedAt(rs.getDate("created_at"));
                 tweet.setLikes(rs.getInt("likes"));
-                tweet.setOwnerId(rs.getString("owner_id"));
+
+                User owner = new User();
+                owner.setUserId(rs.getString("owner_id"));
+                owner.setUsername(rs.getString("username"));
+                owner.setDisplayName(rs.getString("display_name"));
+                owner.setAvatar(rs.getString("avatar"));
+                tweet.setOwner(owner);
+
                 tweet.setIsPublic(rs.getBoolean("public"));
                 tweet.setTweetId(rs.getInt("tweet_id"));
 
@@ -881,7 +901,7 @@ public class Repository {
         Tweet tweet = null;
 
         PreparedStatement st = null;
-        String sql = "select * from tweets where tweet_id=?";
+        String sql = "select * from tweets inner join users on tweets.owner_id=users.user_id where tweet_id=?";
 
         try {
             st = conn.prepareStatement(sql);
@@ -894,7 +914,14 @@ public class Repository {
                 tweet.setContent(rs.getString("content"));
                 tweet.setCreatedAt(rs.getDate("created_at"));
                 tweet.setLikes(rs.getInt("likes"));
-                tweet.setOwnerId(rs.getString("owner_id"));
+
+                User owner = new User();
+                owner.setUserId(rs.getString("owner_id"));
+                owner.setUsername(rs.getString("username"));
+                owner.setDisplayName(rs.getString("display_name"));
+                owner.setAvatar(rs.getString("avatar"));
+                tweet.setOwner(owner);
+
                 tweet.setIsPublic(rs.getBoolean("public"));
                 tweet.setTweetId(rs.getInt("tweet_id"));
 

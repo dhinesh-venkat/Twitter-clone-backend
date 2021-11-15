@@ -9,6 +9,7 @@ import com.dhinesh.twitter.db.Repository;
 import com.dhinesh.twitter.models.Like;
 import com.dhinesh.twitter.models.Reply;
 import com.dhinesh.twitter.models.Tweet;
+import com.dhinesh.twitter.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.DELETE;
@@ -48,8 +49,10 @@ public class TweetService {
             tweet = mapper.readValue(json, Tweet.class);
 
             String user_id = securityContext.getUserPrincipal().getName();
+            User owner = new User();
+            owner.setUserId(user_id);
 
-            tweet.setOwnerId(user_id);
+            tweet.setOwner(owner);
         } catch (IOException e) {
             e.printStackTrace();
             throw new WebApplicationException(Response.Status.NO_CONTENT);
