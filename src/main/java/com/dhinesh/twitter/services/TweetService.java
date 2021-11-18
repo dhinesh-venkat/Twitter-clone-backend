@@ -175,7 +175,11 @@ public class TweetService {
         }
 
         String user_id = securityContext.getUserPrincipal().getName();
-        reply.setReplyBy(user_id);
+
+        User replyBy = new User();
+        replyBy.setUserId(user_id);
+
+        reply.setReplyBy(replyBy);
 
         int result = repo.createReply(reply);
 

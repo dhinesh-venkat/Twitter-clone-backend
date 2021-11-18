@@ -637,7 +637,7 @@ public class Repository {
         try {
             st = conn.prepareStatement(sql);
             st.setString(1, reply.getContent());
-            st.setString(2, reply.getReplyBy());
+            st.setString(2, reply.getReplyBy().getUserId());
             st.setInt(3, reply.getTweetId());
 
             st.executeUpdate();
@@ -660,7 +660,7 @@ public class Repository {
         List<Reply> replies = new ArrayList<Reply>();
 
         PreparedStatement st = null;
-        String sql = "select * from replies where tweet_id=? order by created_at desc";
+        String sql = "select * from replies inner join users on replies.reply_by=users.user_id where tweet_id=? order by replies.created_at desc";
 
         try {
             st = conn.prepareStatement(sql);
@@ -673,7 +673,14 @@ public class Repository {
                 reply.setContent(rs.getString("content"));
                 reply.setCreatedAt(rs.getDate("created_at"));
                 reply.setId(rs.getInt("id"));
-                reply.setReplyBy(rs.getString("reply_by"));
+
+                User replyBy = new User();
+                replyBy.setUserId(rs.getString("user_id"));
+                replyBy.setUsername(rs.getString("username"));
+                replyBy.setDisplayName(rs.getString("display_name"));
+                replyBy.setAvatar(rs.getString("avatar"));
+                reply.setReplyBy(replyBy);
+
                 reply.setTweetId(rs.getInt("tweet_id"));
 
                 replies.add(reply);
@@ -699,7 +706,7 @@ public class Repository {
         Reply reply = null;
 
         PreparedStatement st = null;
-        String sql = "select * from replies where id=?";
+        String sql = "select * from replies inner join users on replies.reply_by=users.user_id where id=?";
 
         try {
             st = conn.prepareStatement(sql);
@@ -712,7 +719,14 @@ public class Repository {
                 reply.setContent(rs.getString("content"));
                 reply.setCreatedAt(rs.getDate("created_at"));
                 reply.setId(rs.getInt("id"));
-                reply.setReplyBy(rs.getString("reply_by"));
+
+                User replyBy = new User();
+                replyBy.setUserId(rs.getString("user_id"));
+                replyBy.setUsername(rs.getString("username"));
+                replyBy.setDisplayName(rs.getString("display_name"));
+                replyBy.setAvatar(rs.getString("avatar"));
+                reply.setReplyBy(replyBy);
+                
                 reply.setTweetId(rs.getInt("tweet_id"));
 
                 return reply;

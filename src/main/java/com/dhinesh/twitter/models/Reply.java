@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Reply {
     private int id;
     private String content;
-    private String replyBy;
+    private User replyBy;
     private int tweetId;
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date createdAt;
 
     public Reply() {
@@ -32,11 +32,11 @@ public class Reply {
         this.content = content;
     }
 
-    public String getReplyBy() {
+    public User getReplyBy() {
         return replyBy;
     }
 
-    public void setReplyBy(String replyBy) {
+    public void setReplyBy(User replyBy) {
         this.replyBy = replyBy;
     }
 
